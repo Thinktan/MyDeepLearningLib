@@ -42,17 +42,17 @@ class TwoLayerNet:
         I, H, O = input_size, hidden_size, output_size
 
         # weights and bias
-        # W1 = np.random.randn(I, H)
-        # b1 = np.random.randn(H)
+        W1 = np.random.randn(I, H)
+        b1 = np.random.randn(H)
+
+        W2 = np.random.randn(H, O)
+        b2 = np.random.randn(O)
+
+        # W1 = np.arange(I*H).reshape(I, H)
+        # b1 = np.arange(0, H, 1)
         #
-        # W2 = np.random.randn(H, O)
-        # b2 = np.random.randn(O)
-
-        W1 = np.arange(I*H).reshape(I, H)
-        b1 = np.arange(0, H, 1)
-
-        W2 = np.arange(H*O).reshape(H, O)
-        b2 = np.arange(0, O, 1)
+        # W2 = np.arange(H*O).reshape(H, O)
+        # b2 = np.arange(0, O, 1)
 
         # layer
         self.layers = [
@@ -63,14 +63,14 @@ class TwoLayerNet:
 
         # params list
         self.params = []
-        index = 0
+        # index = 0
         for layer in self.layers:
             # 将param拼接起来, np.array是引用类型
             self.params += layer.params
-            print("--------index:", index, '---------')
-            print('layer.params:\n', layer.params)
-            print('self.params:\n', self.params, '\n')
-            index += 1
+            # print("--------index:", index, '---------')
+            # print('layer.params:\n', layer.params)
+            # print('self.params:\n', self.params, '\n')
+            # index += 1
         # print(len(self.params), '---------====') ans: 4 affine的W1,b1,W2,b2
 
     def predict(self, x):
