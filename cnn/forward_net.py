@@ -21,7 +21,14 @@ class Sigmoid:
 # b: 1x4(boardcast -> Nx4)(列数是神经元个数)
 # h: Nx4
 
+class Affine:
+    def _init__(self, W, b):
+        self.params = [W, b] # array
 
+    def forward(self, x):
+        W, b = self.params
+        out = np.dot(x, W) + b
+        return out
 
 
 
@@ -46,6 +53,18 @@ s = np.dot(a, W2) + b2
 print(h.shape)
 print(a.shape)
 print(s.shape)
+
+print('------------------------')
+
+print(W1.shape)
+print(b1.shape)
+params = [W1, b1]
+print(params)
+
+print('------------------------')
+x = np.arange(0, 4, 1)
+print(x)
+print(sigmoid(x))
 
 
 
