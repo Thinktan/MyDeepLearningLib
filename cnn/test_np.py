@@ -42,3 +42,4 @@ print(np.sum(np.exp(x)), '\n')
 print(np.exp(x)/np.sum(np.exp(x)), '\n')
 
 print('--------cross_entropy_error---------')
+
