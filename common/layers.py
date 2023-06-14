@@ -2,6 +2,7 @@
 # coding: utf-8
 from common.np import *  # import numpy as np
 from common.config import GPU
+from functions import softmax, cross_entropy_error, relu
 
 # 层的类化及正向传播的实现
 class Sigmoid:
@@ -32,3 +33,30 @@ class Affine:
         W, b = self.params
         out = np.dot(x, W) + b
         return out
+
+
+class Softmax:
+    def __init__(self):
+        self.params = []
+        self.out = None
+
+    def forward(self, x):
+        self.out = softmax(x)
+        return self.out
+
+class SoftmaxWithLoss:
+    def __init__(self):
+        self.params = []
+        self.y = None
+        self.t = None
+
+    def forward(self, x, t):
+        self.t = t
+        self.y = softmax(x)
+
+        # 转成索引形式
+        if self.t.size == self.y.size:
+            self.t = self.t.argmax(axis=1)
+
+        loss = cross_entropy_error(self.y, self.t)
+        return loss
