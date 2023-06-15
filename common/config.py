@@ -7,3 +7,4 @@ GPU = True
 if platform.system() == "Darwin":
     GPU = False
 
+
