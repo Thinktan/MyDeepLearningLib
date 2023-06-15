@@ -76,5 +76,50 @@ print('d2: ', -np.sum( np.log( t[np.arange(t.shape[0]), [[2, 1]]] )) / t.shape[0
 
 
 
+print('--------repated节点---------')
 
+D, N = 8, 7
+# 输入
+x = np.random.randn(1, D)
+print(x)
+# 正向传播
+y = np.repeat(x, N, axis=0)
+print(y)
+# 假设的梯度
+dy = np.random.randn(N, D)
+# 反向传播
+dx = np.sum(dy, axis=0, keepdims=True)
+print('dx:', dx)
 
+print('--------sum节点---------')
+D, N = 8, 7
+# 输入
+x = np.random.randn(N, D)
+# 正向传播
+y = np.sum(x, axis=0, keepdims=True)
+# 假设的梯度
+dy = np.random.randn(1, D)
+# 反向传播
+dx = np.repeat(dy, N, axis=0)
+print('dx: \n', dx)
+
+print('--------MatMul---------')
+D, H, N = 3, 4, 2
+W = np.arange(D*H).reshape(D, H)
+print('W:\n', W)
+params = [W]
+print('param:\n', params)
+W1, = params
+print('W1:\n', W1)
+grads = [np.zeros_like(W)]
+print('grad:\n', grads)
+x = np.arange(N*D).reshape(N, D)
+print('x:\n', x)
+
+print('--------test---------')
+x = np.arange(5).reshape(1, 5)
+x = 1-x
+print('x: ', x)
+y = np.arange(5).reshape(1, 5)
+print(x*y)
+print(type(x))

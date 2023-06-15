@@ -4,10 +4,17 @@ import numpy as np
 # 层的类化及正向传播的实现
 class Sigmoid:
     def __init__(self):
-        self.params = []
+        self.params, self.grads = [], []
+        self.out = None
 
     def forward(self, x):
-        return 1 / (1 + np.exp(-x))
+        out = 1 / (1 + np.exp(-x))
+        self.out = out
+        return out
+
+    def backward(self, dout):
+        dx = dout * (1.0-self.out) * self.out
+        return dx
 
 # 隐藏层计算
 # h = xW + b

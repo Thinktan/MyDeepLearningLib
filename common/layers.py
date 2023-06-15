@@ -60,3 +60,30 @@ class SoftmaxWithLoss:
 
         loss = cross_entropy_error(self.y, self.t)
         return loss
+
+
+class MatMul:
+    def __init__(self, W):
+        '''
+        :param W: 参数
+        维度：
+        x: N*D(N: mini-batch cnt, D 维度)
+        W: D*H
+        y:输出 N*H
+        '''
+        self.params = [W]
+        self.grads = [np.zeros_like(W)] # 保存W的梯度
+        self.x = None
+
+    def forward(self, x):
+        W, = self.params
+        out = np.dot(x, W)
+        self.x = x
+        return out
+
+    def backward(self, dout):
+        W, = self.params
+        dx = np.dot(dout, W.T)
+        dW = np.dot(self.x.T, dout)
+        self.grads[0][...] = dW
+        return dx
