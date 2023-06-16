@@ -1,6 +1,9 @@
 # coding: utf-8
 
 import numpy as np
+import sys
+sys.path.append('..')
+from dataset import spiral
 
 x = np.array([1, 2, -3])
 y = x
@@ -123,3 +126,32 @@ print('x: ', x)
 y = np.arange(5).reshape(1, 5)
 print(x*y)
 print(type(x))
+
+print('--------pyt---------')
+
+
+nx, ny = (3, 3)
+# 从0开始到1结束，返回一个numpy数组,nx代表数组中元素的个数
+x = np.linspace(0, 2, nx)
+# [0. 1. 2.]
+y = np.linspace(0, 2, ny)
+# [0. 1. 2.]
+xv, yv = np.meshgrid(x, y, sparse=False)
+print(xv.ravel())
+# [ 0.  1.  2.  0.  1.  2.  0.  1.  2.]
+print(yv.ravel())
+# [ 0.  0.  0.  1.  1.  1.  2.  2.  2.]
+
+h = 0.001
+x, t = spiral.load_data()
+x_min, x_max = x[:, 0].min() - .1, x[:, 0].max() + .1
+y_min, y_max = x[:, 1].min() - .1, x[:, 1].max() + .1
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+X = np.c_[xx.ravel(), yy.ravel()]
+print(xx.ravel())
+print(yy.ravel())
+print(X.shape)
+
+
+
+

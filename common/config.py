@@ -2,7 +2,7 @@
 
 import platform
 
-GPU = True
+GPU = False
 
 if platform.system() == "Darwin":
     GPU = False

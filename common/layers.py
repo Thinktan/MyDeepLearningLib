@@ -30,7 +30,7 @@ class SigmoidWithLoss:
 
     def forward(self, x, t):
         '''
-        :param x: N*1
+        :param x: N*1 N(mini-batch)
         :param t: N*1 or N,
         :return: loss
         在 `SigmoidWithLoss` 类的 `forward` 方法中，`np.c_` 是用来将两个数组沿第二个轴（列方向）连接起来的。
@@ -69,7 +69,7 @@ class Affine:
     '''
     shape:
     x: N*D
-    W: N*H
+    W: D*H
     b: H --repeated--> N*H
     out(z): N*H
     '''

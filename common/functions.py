@@ -16,9 +16,12 @@ def softmax(x):
     :return:
     mark: 减去max值原因 https://zhuanlan.zhihu.com/p/29376573
     '''
+    # print('softmax x: ', x.shape)
     if x.ndim == 2:
         # learn from test.np/format1
         x = x - x.max(axis=1, keepdims=True)
+        # print(type(x))
+        # print(x.shape)
         x = np.exp(x)
         x /= x.sum(axis=1, keepdims=True)
     elif x.ndim == 1:

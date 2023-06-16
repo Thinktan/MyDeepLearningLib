@@ -11,7 +11,7 @@ class TwoLayerNet:
 
         W1 = 0.01 * np.random.randn(I, H)
         b1 = np.zeros(H)
-        W2 = 0.01 * np.randon.randn(H, O)
+        W2 = 0.01 * np.random.randn(H, O)
         b2 = np.zeros(O)
 
         self.layers = [
@@ -33,6 +33,7 @@ class TwoLayerNet:
 
     def forward(self, x, t):
         score = self.predict(x)
+        # print('score: ', score.shape)
         loss = self.loss_layer.forward(score, t)
         return loss
 
