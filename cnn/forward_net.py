@@ -16,6 +16,8 @@ class Sigmoid:
         dx = dout * (1.0-self.out) * self.out
         return dx
 
+
+
 # 隐藏层计算
 # h = xW + b
 # x: 1x2

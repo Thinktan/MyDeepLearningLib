@@ -1,3 +1,4 @@
+import numpy as np
 
 # coding: utf-8
 from common.np import *  # import numpy as np
@@ -26,13 +27,35 @@ class Sigmoid:
 # h: Nx4
 
 class Affine:
+    '''
+    shape:
+    x: N*D
+    W: N*H
+    b: H --repeated--> N*H
+    out(z): N*H
+    '''
     def __init__(self, W, b):
         self.params = [W, b] # array
+        self.grads = [np.zeros_like(W), np.zeros_like(b)]
+        self.x = None
+
+
 
     def forward(self, x):
         W, b = self.params
         out = np.dot(x, W) + b
+        self.x = x
         return out
+
+    def backward(self, dout):
+        W, b = self.params
+        dx = np.dot(dout, W.T)
+        dW = np.dot(self.x.T, dout)
+        db = np.sum(dout, axis=0)
+
+        self.grads[0][...] = dW
+        self.grads[1][...] = db
+        return dx
 
 
 class Softmax:
@@ -69,7 +92,7 @@ class MatMul:
         维度：
         x: N*D(N: mini-batch cnt, D 维度)
         W: D*H
-        y:输出 N*H
+        out: N*H
         '''
         self.params = [W]
         self.grads = [np.zeros_like(W)] # 保存W的梯度
