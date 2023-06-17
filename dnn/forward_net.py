@@ -116,6 +116,7 @@ b2 = np.arange(0, 3, 1)
 
 
 
+
 h = np.dot(x, W1)+b1
 a = sigmoid(h)
 s = np.dot(a, W2) + b2
