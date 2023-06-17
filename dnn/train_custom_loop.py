@@ -1,7 +1,12 @@
 import sys
 
+'''
+run with set GPU to False
+'''
+
 sys.path.append('..')
-import numpy as np
+#import numpy as np
+from common.np import *
 from common.optimizer import SGD
 from dataset import spiral
 import matplotlib.pyplot as plt

@@ -1,6 +1,6 @@
 # coding: utf-8
-import numpy as np
-
+#import numpy as np
+from common.np import *
 
 def load_data(seed=1984):
     np.random.seed(seed)

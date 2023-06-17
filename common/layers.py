@@ -1,10 +1,10 @@
 # coding: utf-8
 import sys
 sys.path.append('..')
-from common.np import *  # import numpy as np
 from common.config import GPU
 from common.functions import softmax, cross_entropy_error, relu
-import numpy as np
+#import numpy as np
+from common.np import *
 
 # 层的类化及正向传播的实现
 class Sigmoid:
