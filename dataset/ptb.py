@@ -31,7 +31,7 @@ def _download(file_name):
     if os.path.exists(file_path):
         return
 
-    print('Downloading ' + file_name + ' ... ')
+    print('Downloading ' + url_base + file_name + ' ... ')
 
     try:
         urllib.request.urlretrieve(url_base + file_name, file_path)
