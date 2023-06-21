@@ -1,5 +1,8 @@
 # coding: utf-8
 import sys
+
+import numpy as np
+
 sys.path.append('..')
 from common.config import GPU
 from common.functions import softmax, cross_entropy_error, relu
@@ -163,3 +166,32 @@ class MatMul:
         dW = np.dot(self.x.T, dout)
         self.grads[0][...] = dW
         return dx
+
+class Embedding:
+    def __init__(self, W):
+        self.params = [W]
+        self.grads = [np.zeros_like(W)]
+        self.idx = None
+
+    def forward(self, idx):
+        W, = self.params
+        self.idx = idx
+        out = W[idx]
+        return out
+
+
+    def backward(self, dout):
+        dW, = self.grads # 别名，实际是引用
+        dW[...] = 0
+
+        # for i, word_id in enumerate(self.idx):
+        #     dW[word_id] += dout[i]
+        # 等同于np.add.at(dW, self.idx, dout) 参考fastword2vec/test_np_add.py
+
+        if GPU:
+            np.scatter_add(dW, self.idx, dout)
+        else:
+            np.add.at(dW, self.idx, dout)
+
+        return None
+
