@@ -32,3 +32,22 @@ class UnigramSampler:
 
         self.word_p = np.power(self.word_p, power)
         self.word_p /= np.sum(self.word_p)
+
+        def get_negative_sample(self, target):
+            batch_size = target.shape[0]
+
+            if not GPU:
+                negative_sample = np.zeros((batch_size, self.sample_size), dtype=np.int32)
+
+                for i in range(batch_size):
+                    p = self.word_p.copy()
+                    target_idx = target[i]
+                    p[target_idx] = 0 # 避免采样到自己
+                    p /= p.sum() # 因为target_idx位置设置了0，因此重新计算概率分布，保证总和为0
+                    negative_sample[i, :] = np.random.choice(self.vocab_size, size=self.sample_size, replace=False, p=p)
+            else:
+                # GPU模式下，速度也欧先，存在可能正例被当作反例的情况
+                negative_sample = np.random.choice(self.vocab_size, size=(batch_size, self.sample_size),
+                                                   replace=True, p=self.word_p)
+
+            return negative_sample

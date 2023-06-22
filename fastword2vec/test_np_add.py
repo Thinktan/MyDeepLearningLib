@@ -40,3 +40,5 @@ print(y)
 
 print(x*z)
 
+print(np.power(y, .75))
+
