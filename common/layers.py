@@ -210,7 +210,7 @@ class EmbeddingDot:
         :return: (N,)
         '''
         target_W = self.embed.forward(idx) # (N,D)
-        out = np.sum(target_W*h, axis=1) # (N,) dot(矩阵乘法) -> sum
+        out = np.sum(target_W*h, axis=1) # (N,) 逐元素乘法操作 -> sum
 
         self.cache = (h, target_W)
         return out
@@ -223,12 +223,15 @@ class EmbeddingDot:
         '''
         h, target_W = self.cache
         dout = dout.reshape(dout.shape[0], 1) # (N,1)
-        # dout之前属于sum操作，因此广播回形状，后面两个d运算是MatMul操作
+        # dout之前属于sum操作，因此广播回形状，基于乘法的反向传播逻辑，计算dtarget_W和dh
         dtarget_W = dout * h # (N*1 -> N*D)x(N*D)=(N,D)
         self.embed.backward(dtarget_W)
         dh = dout*target_W #(N*1 -> N*D)x(N*D)=(N*D)
 
         return dh
+
+
+
 
 
 
