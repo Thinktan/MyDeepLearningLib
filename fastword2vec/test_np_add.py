@@ -27,3 +27,16 @@ print(dW, '\n')
 
 np.add.at(dW2, idx, dout)
 print(dW2)
+
+x = np.arange(12).reshape(3, 4)
+print(x)
+print(x.shape)
+# print(np.sum(x, axis=1))
+# print(np.sum(x, axis=1).shape)
+
+y = np.array([1, 2, 3])
+z = y.reshape(y.shape[0], 1)
+print(y)
+
+print(x*z)
+

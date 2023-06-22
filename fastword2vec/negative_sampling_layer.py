@@ -6,4 +6,3 @@ from common.layers import Embedding, SigmoidWithLoss
 import collections
 
 # 负采样思想：将多分类问题转成二分类问题
-
