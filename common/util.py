@@ -168,3 +168,17 @@ def convert_one_hot(corpus, vocab_size):
                 one_hot[idx_0, idx_1, word_id] = 1
 
     return one_hot
+
+
+def to_cpu(x):
+    import numpy
+    if type(x) == numpy.ndarray:
+        return x
+    return np.asnumpy(x)
+
+
+def to_gpu(x):
+    import cupy
+    if type(x) == cupy.ndarray:
+        return x
+    return cupy.asarray(x)
