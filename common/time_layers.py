@@ -58,6 +58,11 @@ class TimeRNN:
         self.stateful = stateful
 
     def forward(self, xs):
+        '''
+
+        :param xs: 形状 N*T*D
+        :return: hs: 形状 N*T*H
+        '''
         Wx, Wh, b = self.params
         N, T, D = xs.shape # N个mini-batch，T个时间步长，D为输入向量维度
         D, H = Wx.shape # H是隐藏状态向量维度
@@ -77,9 +82,63 @@ class TimeRNN:
 
         return hs
 
+    def backward(self, dhs):
+        '''
+
+        :param dhs: N*T*H
+        :return: dxs: N*T*D
+        '''
+        Wx, Wh, b = self.params
+        N, T, H = dhs.shape
+        D, H = Wx.shape
+
+        dxs = np.empty((N, T, D), dtype='f') # 给下一层的梯度
+        dh = 0 # 给左侧块的梯度
+
+        grads = [0, 0, 0]
+        for t in reversed(range(T)):
+            layer = self.layers[t]
+            dx, dh = layer.backward(dhs[:, t, :] + dh)
+            dxs[:, t, :] = dx
+
+            for i, grad in enumerate(layer.grads):
+                grads[i] += grad
+
+        for i, grad in enumerate(grads):
+            self.grads[i][...] = grad
+
+        self.dh = dh
+
+        return dxs
+
+
+
     def set_state(self, h):
         self.h = h
 
     def reset_state(self):
         self.h = None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
