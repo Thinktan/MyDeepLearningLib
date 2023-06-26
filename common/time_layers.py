@@ -82,3 +82,4 @@ class TimeRNN:
 
     def reset_state(self):
         self.h = None
+
