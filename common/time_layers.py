@@ -44,3 +44,41 @@ class RNN:
 
         return dx, dh_prev
 
+class TimeRNN:
+    def __init__(self, Wx, Wh, b, stateful=False):
+        self.params = [Wx, Wh, b]
+        self.grads = [np.zeros_like(Wx), np.zeros_like(Wh), np.zeros_like(b)]
+        self.layers = None
+
+        # h保存调用forward方法时的最后一个RNN层的隐藏状态
+        # dh保存调用backward方法时，传给前一个块的隐藏状态的梯度
+        self.h, self.dh = None, None
+
+        # stateful: 是否保存中间
+        self.stateful = stateful
+
+    def forward(self, xs):
+        Wx, Wh, b = self.params
+        N, T, D = xs.shape # N个mini-batch，T个时间步长，D为输入向量维度
+        D, H = Wx.shape # H是隐藏状态向量维度
+
+        self.layers = []
+        # hs: 输出容器，用于存放每个RNN层的输出
+        hs = np.empty((N, T, H), dtype='f')
+
+        if not self.stateful or self.h is None:
+            self.h = np.zeros((N, H), dtype='f')
+
+        for t in range(T):
+            layer = RNN(*self.params)
+            self.h = layer.forward(xs[:, t, :], self.h)  # xs[:, t, :] -> 格式为N*H
+            hs[:, t, :] = self.h # N*H
+            self.layers.append(layer)
+
+        return hs
+
+    def set_state(self, h):
+        self.h = h
+
+    def reset_state(self):
+        self.h = None
