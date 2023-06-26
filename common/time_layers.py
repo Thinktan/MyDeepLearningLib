@@ -43,3 +43,4 @@ class RNN:
         self.grads[2][...] = db
 
         return dx, dh_prev
+
