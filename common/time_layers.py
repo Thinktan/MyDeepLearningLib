@@ -3,6 +3,7 @@ import sys
 sys.path.append('..')
 from common.np import *
 from common.layers import SigmoidWithLoss, Embedding
+from common.functions import softmax
 
 class RNN:
     def __init__(self, Wx, Wh, b):
@@ -232,7 +233,84 @@ class TimeSigmoidWithLoss:
 
         return dxs #dxs.shape: (N,T)
 
+class TimeSoftmaxWithLoss:
+    '''
+    explain from gpt4.0
+    这段代码定义了一个名为TimeSoftmaxWithLoss的类，
+    它是一个用于处理序列数据的Softmax激活函数和损失计算的组合层。
+    这个类有两个主要方法：forward和backward，分别用于前向传播和反向传播。
+    mask是一个重要的概念，它用于处理不同长度的序列数据。在训练循环神经网络（RNN）时，
+    我们通常需要处理不同长度的序列。为了将这些序列放入一个批次中，
+    我们需要对较短的序列进行填充（padding），使它们与最长序列具有相同的长度。
+    然而，在计算损失和梯度时，我们不希望这些填充值对结果产生影响。这就是mask的作用。
+    mask是一个与ts（目标序列）形状相同的布尔数组，其中True表示对应位置的元素不是填充值（即有效数据），
+    False表示对应位置的元素是填充值。在这个代码中，填充值由self.ignore_label表示，默认值为-1。
+    在forward方法中，mask用于将填充值对应的损失设置为0，从而在计算总损失时不考虑这些值。
+    在backward方法中，mask用于将填充值对应的梯度设置为0，从而在更新参数时不考虑这些值。
+    总之，mask是一个用于处理不同长度序列数据的关键概念，它确保了填充值不会对损失和梯度产生影响。
+    '''
+    def __init__(self):
+        self.params, self.grads = [], []
+        self.cache = None
+        self.ignore_label = -1
 
+    def forward(self, xs, ts):
+        N, T, V = xs.shape
+
+        if ts.ndim == 3:  # 如果监督标签是one-hot编码，转成索引格式
+            ts = ts.argmax(axis=2)
+
+        # 这段代码的作用是将ts中等于ignore_label的元素设置为False，其余元素设置为True，
+        # 生成一个与ts形状相同的掩码数组mask。(N*T)
+        mask = (ts != self.ignore_label)
+
+        # 合并批次和时间序列N*T（reshape）
+        xs = xs.reshape(N * T, V)
+        ts = ts.reshape(N * T)
+        mask = mask.reshape(N * T)
+
+        ys = softmax(xs)
+        ls = np.log(ys[np.arange(N * T), ts])
+        ls *= mask  # 在forward方法中，mask用于将填充值对应的损失设置为0，从而在计算总损失时不考虑这些值。
+        loss = -np.sum(ls)
+        loss /= mask.sum()
+
+        self.cache = (ts, ys, mask, (N, T, V))
+        return loss
+
+    def backward(self, dout=1):
+        # explain from gpt4, it's nice~
+
+        # 从缓存中获取之前在forward方法中存储的变量：
+        # ts（目标序列），
+        # ys（Softmax激活后的输出），
+        # mask（用于处理填充值的布尔数组）
+        # 和(N, T, V)（输入数据的形状参数）。
+        ts, ys, mask, (N, T, V) = self.cache
+
+        # 计算Softmax激活函数关于输入xs的梯度。首先，我们将ys（Softmax输出）赋值给dx。
+        # 然后，我们使用NumPy的高级索引功能，将ts中的正确类别对应的梯度减1。
+        # 这是因为Softmax损失函数关于正确类别的梯度是ys - 1，而对于其他类别的梯度是ys。
+        dx = ys # shape -> (N*T,V)
+        dx[np.arange(N * T), ts] -= 1 # shape -> (N*T,V)
+
+        # 将dx乘以dout，这是损失函数关于Softmax层输出的梯度。在
+        # 这个例子中，dout默认值为1，因为我们计算的是损失函数关于输入xs的直接梯度。
+        dx *= dout
+
+        # 将dx除以mask的总和（即有效数据的数量），这是为了对梯度进行归一化处理。
+        # 这样做可以确保在不同批次大小和序列长度的情况下，梯度的大小保持一致。
+        dx /= mask.sum()
+
+        # 使用mask[:, np.newaxis]来将mask从形状(N*T,)扩展为形状(N*T,1)，
+        # 以便将其与dx(N*T,V)相乘。这样做可以确保填充值对应的梯度设置为0。
+        dx *= mask[:, np.newaxis]
+
+        # 最后，将dx的形状从(N * T, V)调整为原始输入数据的形状(N, T, V)，
+        # 以便在神经网络中继续进行反向传播。
+        dx = dx.reshape((N, T, V))
+
+        return dx
 
 
 
