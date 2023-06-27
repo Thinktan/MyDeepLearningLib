@@ -2,6 +2,7 @@
 import sys
 sys.path.append('..')
 from common.np import *
+from common.layers import SigmoidWithLoss, Embedding
 
 class RNN:
     def __init__(self, Wx, Wh, b):
@@ -119,10 +120,117 @@ class TimeRNN:
     def reset_state(self):
         self.h = None
 
+class TimeEmbedding:
+    def __init__(self, W):
+        self.params = [W]
+        self.grads = [np.zeros_like(W)]
+        self.layers = None
+        self.W = W # shape -> (V,D), V: 词汇表数量, D: 向量维度
+
+    def forward(self, xs):
+        # N：mini-batch size
+        # T: 时间步长
+        N, T = xs.shape
+
+        V, D = self.W.shape
+
+        out = np.empty((N, T, D), dtype='f')
+        self.layers = []
+
+        # 按照时间步长处理，mini-batch: N
+        for t in range(T):
+            layer = Embedding(self.W)
+            # out[:, t, :].shape -> (N,D)
+            # xs[:, t].shape -> (N,)
+            out[:, t, :] = layer.forward(xs[:, t])
+            self.layers.append(layer)
+
+        return out
+
+    def backward(self, dout):
+        N, T, D = dout.shape
+
+        grad = 0
+        for t in range(T):
+            layer = self.layers[t]
+            layer.backward(dout[:, t, :])
+            grad += layer.grads[0]
+
+        self.grads[0][...] = grad
+        return None
 
 
+class TimeAffine:
+    def __init__(self, W, b):
+        self.params = [W, b]
+        self.grads = [np.zeros_like(W), np.zeros_like(b)]
+        self.x = None
+
+    def forward(self, x):
+        N, T, D = x.shape
+        W, b = self.params # W: D*H, b: H*1
+
+        rx = x.reshape(N*T, -1) # N,T,D -> N*T,D
+        out = np.dot(rx, W) + b # out: N*T,H
+        self.x = x
+        return out.reshape(N, T, -1)
+
+    def backward(self, dout):
+        '''
+
+        :param dout: shape: N,T,H
+        :return:
+        '''
+        x = self.x # N,T,D
+        N, T, D = x.shape
+        W, b = self.params # W: D*H, b: H*1
+
+        dout = dout.reshape(N*T, -1) # dout: N,T,H -> N*T,H
+        rx = x.reshape(N*T, -1) # N,T,D -> N*T,D
+
+        db = np.sum(dout, axis=0) # (H,)
+        dW = np.dot(rx.T, dout) # dW.shape: (D,N*T)*(N*T,H) -> (D,H)
+        dx = np.dot(dout, W.T) # dx.shape: (N*T,H)*(H,D) -> (N*T,D)
+        dx = dx.reshape(*x.shape) # dx.shape: (N*T,D) -> (N,T,D)
+
+        self.grads[0][...] = dW
+        self.grads[1][...] = db
+
+        return dx
 
 
+class TimeSigmoidWithLoss:
+    def __init__(self):
+        self.params, self.grads = [], []
+        self.xs_shape = None
+        self.layers = None
+
+    def forward(self, xs, ts):
+        N, T = xs.shape
+        self.xs_shape = xs.shape
+
+        self.layers = []
+        loss = 0
+
+        for t in range(T):
+            layer = SigmoidWithLoss()
+            # xs[:,t].shape: (N,)
+            # ts[:,t].shape: (N,)
+            loss += layer.forward(xs[:, t], ts[:, t])
+            self.layers.append(layer)
+
+        return loss / T
+
+    def backward(self, dout=1):
+        N, T = self.xs_shape
+        dxs = np.empty(self.xs_shape, dtype='f')
+
+        dout *= 1/T
+        for t in range(T):
+            layer = self.layers[t]
+            dxs[:, t] = layer.backward(dout)
+
+        return dxs #dxs.shape: (N,T)
 
 
 
