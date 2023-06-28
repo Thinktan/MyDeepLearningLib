@@ -100,7 +100,7 @@ class TimeRNN:
         grads = [0, 0, 0]
         for t in reversed(range(T)):
             layer = self.layers[t]
-            dx, dh = layer.backward(dhs[:, t, :] + dh)
+            dx, dh = layer.backward(dhs[:, t, :] + dh) # 梯度为上方和右方传过来的梯度之和来计算
             dxs[:, t, :] = dx
 
             for i, grad in enumerate(layer.grads):
