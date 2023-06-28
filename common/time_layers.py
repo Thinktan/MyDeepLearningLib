@@ -114,7 +114,6 @@ class TimeRNN:
         return dxs
 
 
-
     def set_state(self, h):
         self.h = h
 
