@@ -61,3 +61,4 @@ class CBOW:
             layer.backward(dout)
 
         return None
+
