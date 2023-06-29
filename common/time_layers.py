@@ -204,6 +204,32 @@ class LSTM:
 
         return dx, dh_prev, dc_prev
 
+class TimeDropout:
+    def __init__(self, dropout_ratio=0.5):
+        self.params, self.grads = [], []
+        self.dropout_ratio = dropout_ratio
+        self.mask = None
+        self.train_flg = True
+
+    def forward(self, xs):
+        '''
+        把某些输入丢弃了(flg为false的)；
+        将其他输入增大scale倍(flg为true的);
+        :param xs:
+        :return:
+        '''
+        if self.train_flg:
+            flg = np.random.rand(*xs.shape) > self.dropout_ratio
+            scale = 1 / (1.0 - self.dropout_ratio)
+            self.mask = flg.astype(np.float32) * scale
+
+            return xs * self.mask
+        else:
+            return xs
+
+    def backward(self, dout):
+        return dout * self.mask
+
 
 class TimeLSTM:
     def __init__(self, Wx, Wh, b, stateful=False):
