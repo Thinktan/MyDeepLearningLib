@@ -48,7 +48,7 @@ class CBOW:
         '''
         h = 0
         for i, layer in enumerate(self.in_layers):
-            h + layer.forward(contexts)
+            h += layer.forward(contexts)
 
         h *= 1/len(self.in_layers)
         loss = self.ns_loss.forward(h, target)
