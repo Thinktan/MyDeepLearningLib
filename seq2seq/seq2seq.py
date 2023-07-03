@@ -27,3 +27,17 @@ class Encoder:
         self.params = self.embed.params + self.lstm.params
         self.grads = self.embed.grads + self.lstm.grads
         self.hs = None
+
+    def forward(self, xs):
+        xs = self.embed.forward(xs)
+        hs = self.lstm.forward(xs)
+        self.hs = hs
+        return hs[:, -1, :] # 取最后一个时刻的隐藏状态
+
+    def backward(self, dh):
+        dhs = np.zeros_like(self.hs)
+        dhs[:, -1, :] = dh # 将dh放入到dhs中对应位置，即最后一个时刻位置
+
+        dout = self.lstm.backward(dhs)
+        dout = self.embed.backward(dout)
+        return dout
