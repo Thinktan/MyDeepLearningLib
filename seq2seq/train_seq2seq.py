@@ -8,7 +8,7 @@ from common.optimizer import Adam
 from common.trainer import Trainer
 from common.util import eval_seq2seq
 from seq2seq import Seq2seq
-# from peeky_seq2seq import PeekySeq2seq
+from peeky_seq2seq import PeekySeq2seq
 
 
 # 加载数据集
@@ -16,7 +16,8 @@ from seq2seq import Seq2seq
 char_to_id, id_to_char = sequence.get_vocab()
 
 # Reverse input? =================================================
-is_reverse = False  # True
+# 优化1：反转输入
+is_reverse = True  # True
 if is_reverse:
     x_train, x_test = x_train[:, ::-1], x_test[:, ::-1]
 # ================================================================
@@ -30,8 +31,8 @@ max_epoch = 25
 max_grad = 5.0
 
 # Normal or Peeky? ==============================================
-model = Seq2seq(vocab_size, wordvec_size, hidden_size)
-# model = PeekySeq2seq(vocab_size, wordvec_size, hidden_size)
+# model = Seq2seq(vocab_size, wordvec_size, hidden_size)
+model = PeekySeq2seq(vocab_size, wordvec_size, hidden_size)
 # ================================================================
 optimizer = Adam()
 trainer = Trainer(model, optimizer)
