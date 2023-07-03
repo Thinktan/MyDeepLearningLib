@@ -6,7 +6,7 @@ from common.time_layers import *
 from common.base_model import *
 
 class Encoder:
-    def __init(self, vocab_size, wordvec_size, hidden_size):
+    def __init__(self, vocab_size, wordvec_size, hidden_size):
         '''
 
         :param vocab_size: 词汇表数量(数字0-9，"+", "", "_")
