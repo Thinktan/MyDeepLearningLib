@@ -11,9 +11,9 @@ class WeightSum:
         self.cache = None
 
     def forward(self, hs, a):
-        N, T, H = hs.shape
+        N, T, H = hs.shape # (N,T,H)
 
-        ar = a.reshape(N, T, 1)#.repeat(T, axis=1)
+        ar = a.reshape(N, T, 1).repeat(H, axis=2) # reshape (N,T) -> (N,T,1), repeated -> (N,T,H)
         t = hs * ar
         c = np.sum(t, axis=1)
 
