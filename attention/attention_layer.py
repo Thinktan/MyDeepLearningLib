@@ -129,7 +129,7 @@ class TimeAttention:
         N, Td, H = hs_dec.shape
         out = np.empty_like(hs_dec)
         self.layers = []
-        self.attention_weights = []
+        self.attention_weights = [] # (Td,N,T)
 
         for t in range(Td):
             layer = Attention()
