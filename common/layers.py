@@ -123,12 +123,21 @@ class SoftmaxWithLoss:
     def forward(self, x, t):
         self.t = t
         self.y = softmax(x)
+        print('x: ')
+        print(x.shape)
+        print('y: ')
+        print(self.y.shape)
+        print('t: ')
+        print(self.t.shape)
+        #exit(0)
 
         # 转成索引形式
         if self.t.size == self.y.size:
             self.t = self.t.argmax(axis=1)
 
         loss = cross_entropy_error(self.y, self.t)
+        print('loss: ')
+        print(loss)
         return loss
 
 
@@ -138,6 +147,11 @@ class SoftmaxWithLoss:
         dx[np.arange(batch_size), self.t] -= 1
         dx *= dout
         dx = dx/batch_size
+
+        print('dout: ')
+        print(dout)
+        print('dx: ')
+        print(dx.shape)
 
         return dx
 
