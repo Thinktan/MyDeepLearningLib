@@ -45,6 +45,11 @@ class Trainer:
                 batch_x = x[iters*batch_size:(iters+1)*batch_size]
                 batch_t = t[iters*batch_size:(iters+1)*batch_size]
 
+                print(batch_x)
+                print('-----------')
+                print(batch_t)
+                print('===========')
+
                 # 求梯度并更新参数
                 loss = model.forward(batch_x, batch_t)
                 model.backward()
@@ -58,7 +63,8 @@ class Trainer:
                 total_loss += loss
                 loss_count += 1
 
-                if (eval_interval is not None) and (iters % eval_interval) == 0:
+                # if (eval_interval is not None) and (iters % eval_interval) == 0:
+                if (eval_interval is not None):
                     avg_loss = total_loss / loss_count
                     elapsed_time = time.time() - start_time
                     print('| epoch %d |  iter %d / %d | time %d[s] | loss %.2f'
