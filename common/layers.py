@@ -123,12 +123,12 @@ class SoftmaxWithLoss:
     def forward(self, x, t):
         self.t = t
         self.y = softmax(x)
-        print('x: ')
-        print(x.shape)
-        print('y: ')
-        print(self.y.shape)
-        print('t: ')
-        print(self.t.shape)
+        # print('x: ')
+        # print(x.shape)
+        # print('y: ')
+        # print(self.y.shape)
+        # print('t: ')
+        # print(self.t.shape)
         #exit(0)
 
         # 转成索引形式
@@ -148,10 +148,10 @@ class SoftmaxWithLoss:
         dx *= dout
         dx = dx/batch_size
 
-        print('dout: ')
-        print(dout)
-        print('dx: ')
-        print(dx.shape)
+        # print('dout: ')
+        # print(dout)
+        # print('dx: ')
+        # print(dx.shape)
 
         return dx
 

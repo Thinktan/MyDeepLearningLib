@@ -72,7 +72,7 @@ class Trainer:
                     self.loss_list.append(float(avg_loss))
                     total_loss, loss_count = 0, 0
 
-                exit(0)
+                # exit(0) # for test
 
             self.current_epoch += 1
 
